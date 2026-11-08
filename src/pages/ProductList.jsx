@@ -1,7 +1,7 @@
 
+import { Link, useSearchParams } from "react-router";
 import { fetchProducts } from "../api/productsApi";
 import useFetch from "../hooks/useFetch";
-import { useSearchParams } from "react-router";
 
 export default function ProductList() {
   const { data, loading, error } = useFetch(fetchProducts, []);
@@ -18,7 +18,9 @@ export default function ProductList() {
     return <p>Error: {error}</p>;
   }
 
-  const categories = [...new Set(data.map((product) => product.category))];
+  const categories = [
+    ...new Set(data.map((product) => product.category)),
+  ];
 
   const filteredProducts = data.filter((product) => {
     const matchesSearch = product.title
@@ -84,12 +86,18 @@ export default function ProductList() {
       <div>
         {filteredProducts.map((product) => (
           <div key={product.id}>
-            <h3>{product.title}</h3>
+            <h3>
+              <Link to={`/products/${product.id}`}>
+                {product.title}
+              </Link>
+            </h3>
+
             <img
               src={product.image}
               alt={product.title}
               width="100"
             />
+
             <p>${product.price}</p>
           </div>
         ))}
