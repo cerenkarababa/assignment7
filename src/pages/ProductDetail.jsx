@@ -3,10 +3,13 @@ import { useCallback } from "react";
 import { useNavigate, useParams } from "react-router";
 import { fetchProduct } from "../api/productsApi";
 import useFetch from "../hooks/useFetch";
+import useCartStore from "../store/cartStore";
 
 export default function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+
+  const addItem = useCartStore((state) => state.addItem);
 
   const loadProduct = useCallback(
     (signal) => fetchProduct(id, signal),
@@ -25,6 +28,11 @@ export default function ProductDetail() {
 
   if (!data || !data.id) {
     return <p>Product not found.</p>;
+  }
+
+  function handleAddToCart() {
+    addItem(data);
+    alert("Product added to cart!");
   }
 
   return (
@@ -49,8 +57,8 @@ export default function ProductDetail() {
 
       <p>Rating: {data.rating?.rate} / 5</p>
 
-      <button disabled>
-        Add to Cart (Coming Soon)
+      <button onClick={handleAddToCart}>
+        Add to Cart
       </button>
     </div>
   );

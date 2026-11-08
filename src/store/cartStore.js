@@ -1,8 +1,20 @@
 
 import { create } from "zustand";
 
+function getSavedCart() {
+  try {
+    const savedCart = localStorage.getItem("myshop-cart");
+    const parsedCart = savedCart ? JSON.parse(savedCart) : [];
+
+    return Array.isArray(parsedCart) ? parsedCart : [];
+  } catch (error) {
+    console.error("Could not load cart:", error);
+    return [];
+  }
+}
+
 const useCartStore = create((set) => ({
-  items: [],
+  items: getSavedCart(),
 
   addItem: (product) =>
     set((state) => {
@@ -50,5 +62,14 @@ const useCartStore = create((set) => ({
 
   clear: () => set({ items: [] }),
 }));
+
+// Save cart changes to localStorage outside React components.
+useCartStore.subscribe((state) => {
+  try {
+    localStorage.setItem("myshop-cart", JSON.stringify(state.items));
+  } catch (error) {
+    console.error("Could not save cart:", error);
+  }
+});
 
 export default useCartStore;
